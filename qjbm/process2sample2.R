@@ -32,8 +32,12 @@ bind <- function(x){
   if(ncol(x)==1){x <- t(x)}
   as.data.frame(x,stringsAsFactors=F)
 }
-is.error <- function(x){
-  class(x)=='try-error'
+error2na <- function(x){
+  if(class(x)=='try-error'){
+    return(NA)
+  } else {
+    return(x)
+  }
 }
 
 ##########################
@@ -58,12 +62,12 @@ pdata <- lapply(raw_bk,function(x){
   x.basic <- unlist(x$basic)
   x.call <- bind(x$callLog[[3]])
   x.contact <- try(bind(x$contacts))
-    x.contact <- ifelse(is.error(x.contact),NA,x.contact)
+    x.contact <- error2na(x.contact)
   x.behavior <- try(bind(x$behavior))
-    x.behavior <- ifelse(is.error(x.behavior),NA,x.behavior)
+    x.behavior <- error2na(x.behavior)
   x.record <- bind(x$existingCustomer)
   x.dev <- try(bind(lapply(x$device,function(x)x[-1])))
-    x.dev <- ifelse(is.error(x.dev),NA,x.dev)
+    x.dev <- error2na(x.dev)
   x.app <- lapply(x$device,function(x) x[[1]])
   x.credit <- ifelse(is.null(x$credit[[1]]),NA,x$credit[[1]])
   x.em <- bind(x$emergencyContacts)
